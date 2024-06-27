@@ -1,6 +1,8 @@
 package com.example.udemy.config;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -13,6 +15,7 @@ import com.example.udemy.services.AccountService;
 import com.example.udemy.services.AuthorityService;
 import com.example.udemy.services.PostService;
 import com.example.udemy.util.constants.Privillages;
+import com.example.udemy.util.constants.Roles;
 
 
 @Component
@@ -37,38 +40,68 @@ public class SeedData implements CommandLineRunner{
 
        }
 
-        Account account01 = new Account();
-        Account account02 = new Account();
+       for(Privillages auth: Privillages.values()){
+            Authority authority = new Authority();
+            authority.setId(auth.getId());
+            authority.setName(auth.getPrivillage());
+            authorityService.save(authority);
 
-        account01.setEmail("account1@gmail.com");
-        account01.setPassword("123");
-        account01.setFirstname("user01");
-        account01.setLastname("lastname01");
+       }
+        
+       Account account01 = new Account();
+       Account account02 = new Account();
+       Account account03 = new Account();
+       Account account04 = new Account();
 
-        account02.setEmail("account2@gmail.com");
-        account02.setPassword("123");
-        account02.setFirstname("user02");
-        account02.setLastname("lastname02");
-
-        accountService.save(account01);
-        accountService.save(account02);
+       account01.setEmail("user@user.com");
+       account01.setPassword("pass987");
+       account01.setFirstname("User");
+       account01.setLastname("lastname");
 
 
-        List<Post> posts = postService.getAll();
-        if (posts.size() == 0){
+       account02.setEmail("admin@admin.com");
+       account02.setPassword("pass987");
+       account02.setFirstname("Admin");
+       account02.setLastname("lastname");
+       account02.setRole(Roles.ADMIN.getRole());
+
+       account03.setEmail("editor@editor.com");
+       account03.setPassword("pass987");
+       account03.setFirstname("Editor");
+       account03.setLastname("lastname");
+       account03.setRole(Roles.EDITOR.getRole());
+
+       account04.setEmail("super_editor@editor.com");
+       account04.setPassword("pass987");
+       account04.setFirstname("Editor");
+       account04.setLastname("lastname");
+       account04.setRole(Roles.EDITOR.getRole());
+       
+       Set<Authority> authorities = new HashSet<>();
+       authorityService.findById(Privillages.ACCESS_ADMIN_PANEL.getId()).ifPresent(authorities::add);
+       authorityService.findById(Privillages.RESET_ANY_USER_PASSWORD.getId()).ifPresent(authorities::add);
+       account04.setAuthorities(authorities);
+
+       accountService.save(account01);
+       accountService.save(account02);
+       accountService.save(account03);
+       accountService.save(account04);
+       
+
+
+       List<Post> posts = postService.getAll();
+       if (posts.size() == 0){
             Post post01 = new Post();
-            post01.setTitle("post 01");
-            post01.setBody("Post 01 body ......");
+            post01.setTitle("Post 01");
+            post01.setBody("Post 01 body.....................");
             post01.setAccount(account01);
             postService.save(post01);
 
-
             Post post02 = new Post();
-            post02.setTitle("post 02");
-            post02.setBody("Post 02 body ......");
+            post02.setTitle("Post 02");
+            post02.setBody("Post 02 body.....................");
             post02.setAccount(account02);
             postService.save(post02);
-
 
        }
 

@@ -31,7 +31,9 @@ public class AccountService implements UserDetailsService {
 
     public Account save(Account account){
         account.setPassword(passwordEncoder.encode(account.getPassword())); // encodes password with the help of sring security, web services 
-        account.setRole(Roles.USER.getRole());
+        if (account.getRole() == null){
+            account.setRole(Roles.USER.getRole());
+        }
         return accountRepository.save(account);
 
     }
@@ -51,5 +53,6 @@ public class AccountService implements UserDetailsService {
         return new User(account.getEmail(), account.getPassword(), grantedAuthority);
 
     }
+
 
 }
